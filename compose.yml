@@ -4,11 +4,11 @@ services:
   db:   
     profiles: ["all", "db"]
     build: 
-      context: ./db
+      context: .
       dockerfile: ./devops/services/postgres/postgres.Dockerfile
     container_name: dfa-pgdb
     volumes:  
-      - pgdata:/var/lib/postgresql/data
+      - ./data/db:/var/lib/postgresql/data
     env_file: 
       - ./devops/services/postgres/.env
     ports:
