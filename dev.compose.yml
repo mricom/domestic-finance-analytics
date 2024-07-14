@@ -13,3 +13,18 @@ services:
       - ./devops/services/postgres/.env
     ports:
       - "5432:5432"
+
+  django: 
+    profiles: ["all", "django"]
+    build: 
+      context: .
+      dockerfile: ./devops/services/django/django.Dockerfile
+    container_name: dfa-django
+    volumes: 
+      - .:/app
+    env_file: 
+      - .env
+    ports: 
+      - "8000:8000"
+    depends_on: 
+      - db

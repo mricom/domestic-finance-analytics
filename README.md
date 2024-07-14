@@ -1,1 +1,4 @@
-# domestic-finance-analytics
+# Domestic Finance Analytics
+
+Python == 3.10
+
