@@ -1,4 +1,4 @@
-dev.asgiref==3.8.1
+asgiref==3.8.1
 Django==5.0
 psycopg==3.2.1
 psycopg-binary==3.2.1
