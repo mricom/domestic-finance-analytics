@@ -1,0 +1,20 @@
+[project]
+name = "Domestic Finance"
+version = "0.0.1"
+description = "Domestic Finance Tool"
+authors = [ {name = "Alex Llobet Martinez-Pons", email = "alexllobet369@gmail.com"}, {name = "Maria Rico Morillo", email = "mricomorillo@gmail.com"} ]
+requires-python = "==3.10"
+readme = "README.md"
+
+
+[tool.pytest.ini_options]
+env_files = ".env"
+python_files = "tests.py test_*.py *_tests.py pytest_*.py *_pytests.py"
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+addopts = " --no-migrations -vv --reuse-db -p no:warnings --import-mode=importlib"
+norecursedirs = [
+    "data/*", 
+]
