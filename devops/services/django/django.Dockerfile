@@ -8,6 +8,9 @@ WORKDIR /app
 RUN pip install --upgrade pip
 RUN pip install -r dev-requirements.txt
 
-RUN chmod u+x ./devops/services/django/django_entrypoint.sh
+RUN chmod a+x devops/services/django/django_entrypoint.sh
 
-CMD ["/bin/bash", "-c", "./devops/services/django/django_entrypoint.sh runserver-debug"]
+# Verify permissions (optional step for debugging)
+RUN ls -l devops/services/django/django_entrypoint.sh
+
+CMD ["/bin/bash", "devops/services/django/django_entrypoint.sh",  "runserver-debug"]

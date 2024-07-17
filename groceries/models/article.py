@@ -18,7 +18,7 @@ class Article(models.Model):
     # Content
     content = models.CharField(max_length=50, null=True, blank=True)
     # Basic Price
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     # isAvailable
     is_available = models.BooleanField(default=True, blank=True)
     # inPromo
