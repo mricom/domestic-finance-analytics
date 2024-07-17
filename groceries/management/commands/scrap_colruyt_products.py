@@ -10,7 +10,7 @@ class Command(BaseCommand):
     
     def handle(self, *args, **kwargs):
         field_mapping = {
-        'commercialArticleNumber': 'id',
+        'commercialArticleNumber': 'shop_id',
         'name': 'name',
         'LongName': 'long_name',
         'brand': 'brand',
@@ -34,7 +34,7 @@ class Command(BaseCommand):
         scrapped_data['season_start_date'] = pd.to_datetime(scrapped_data['season_start_date'], format='%d/%m/%Y', errors='coerce')
         scrapped_data['season_start_date'] = scrapped_data['season_start_date'].astype(object).where(scrapped_data['season_start_date'].notnull(), None)
         scrapped_data['category'] = scrapped_data['category'].fillna('Unknown')
-        scrapped_data = scrapped_data.drop_duplicates(subset=['id'])
+        scrapped_data = scrapped_data.drop_duplicates(subset=['shop_id'])
 
         for _, row in scrapped_data.iterrows():
             Article.objects.create(**row.to_dict())

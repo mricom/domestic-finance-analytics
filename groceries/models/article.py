@@ -2,8 +2,8 @@ from django.db import models
 from groceries.models.shop import Shop
 
 class Article(models.Model):
-    # Article Id
-    id = models.BigIntegerField(primary_key=True)
+    # Id of the article in the shop (article_id)
+    shop_id = models.BigIntegerField()
     # Short name
     name = models.CharField(max_length=255, null=True, blank=True)
     # Long name
