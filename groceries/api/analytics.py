@@ -1,5 +1,8 @@
-from ninja import ModelSchema, Router
+import datetime
+from django.http import HttpResponse
+from ninja import ModelSchema, Router, Schema
 from django.db.models import Sum
+from requests import HTTPError
 
 from groceries.models.article import Article
 from groceries.models.invoice_line import InvoiceLine
@@ -8,26 +11,22 @@ router = Router()
 
 
 class ArticleSchema(ModelSchema):
-    class Meta:
+    class Config:
         model = Article
-        fields = [
-            # "shop_id",
-            # "name",
-            # "long_name",
-            # "description",
-            # "brand",
-            # "category",
-            # "unit_price",
-            # "is_available",
-            # "in_promo",
-            # "nutriscore",
-            # "country_of_origin",
-            # "is_bio",
-            # "in_season",
-        ]
+        model_fields = "__all__"
 
 
-@router.get("/group_by/")
+class InputInvoiceLineSchema(Schema):
+    shop_id: int
+    cost: float
+
+
+class InputInvoiceSchema(Schema):
+    date: datetime.datetime
+    lines: list[InputInvoiceLineSchema]
+
+
+@router.get("/group_by/", response=dict)
 def get_grouped_groceries_by_field(
     request, field: str = None, date: str = None
 ) -> list:
@@ -50,7 +49,7 @@ def get_grouped_groceries_by_field(
     return total_cost_per_category
 
 
-@router.get("/price-ranking/", response=[ArticleSchema])
+@router.get("/price-ranking/", response=list[ArticleSchema])
 def get_groceries_ranked_by_price(request, limit: int, date: str):
     """
     Returns the top [limit] most expensive items in a specific invoice.
@@ -59,5 +58,26 @@ def get_groceries_ranked_by_price(request, limit: int, date: str):
     - limit: The number of items to return.
     - date: The date of the invoice.
     """
-    invoice_lines = InvoiceLine.objects.filter(invoice__date=date).order_by("-total_cost")[:limit]
+    invoice_lines = InvoiceLine.objects.filter(invoice__date=date).order_by(
+        "-total_cost"
+    )[:limit]
     return invoice_lines
+
+
+@router.post("/invoice/")
+def create_invoice(request, data: InputInvoiceSchema):
+    """
+    Create a new invoice.
+    """
+    invoice_exists = InvoiceLine.objects.filter(date=data.date).exists()
+    if invoice_exists:
+        return HTTPError(400, "Invoice already exists")
+    try: 
+        for line in data.lines:
+            InvoiceLine.create_invoice_line(
+                article_shop_id=line.shop_id, cost=line.cost, purchase_date=data.date
+            )
+    except Exception as e:
+        return HTTPError(500, str(e))
+
+    return HttpResponse(200, {"message": "Invoice created successfully!"})
