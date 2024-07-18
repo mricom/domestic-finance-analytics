@@ -167,3 +167,8 @@ data/*
 
 # VS Code
 .vscode/
+
+# Credentials
+credentials.json
+service-account-key.json
+token.json
