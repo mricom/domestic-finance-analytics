@@ -4,5 +4,21 @@
 Analytics - Domfin 
 {% endblock title %} 
 
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock extra_head%}
+
 {% block content %} 
+<div>
+    <canvas id="myChart"></canvas>
+  </div>
+  
 {% endblock content %}
+
+{% block script %}
+<script>
+    let field = "category";
+
+
+</script>
+{% endblock script %}

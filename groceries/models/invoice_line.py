@@ -27,3 +27,12 @@ class InvoiceLine(models.Model):
         ordering = ['id']
         verbose_name = "Invoice Line"
         verbose_name_plural = "Invoice Lines"
+
+    @classmethod
+    def create_invoice_line(cls, article_shop_id, cost, purchase_date, shop_id):
+        article = Article.objects.filter(shop_id=article_shop_id).first()
+        unit_price = article.unit_price
+        quantity = int(cost / unit_price)
+
+        invoice_line = cls.objects.create(article=article, cost=cost, unit_price=unit_price, quantity=quantity, purchase_date=purchase_date, shop_id=shop_id)
+        return invoice_line
