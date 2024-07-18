@@ -8,6 +8,7 @@ readme = "README.md"
 
 
 [tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "domestic_finance_analytics.settings"
 env_files = ".env"
 python_files = "tests.py test_*.py *_tests.py pytest_*.py *_pytests.py"
 log_cli = true
