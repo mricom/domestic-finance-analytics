@@ -28,3 +28,14 @@ services:
       - "8000:8000"
     depends_on: 
       - db
+  
+  scrapper:
+    profiles: ["all", "scrapper"]
+    build: 
+      context: .
+      dockerfile: ./devops/services/scrapper/scrapper.Dockerfile
+    container_name: dfa-scrapper
+    volumes: 
+      - .:/app
+    ports: 
+      - "8001:8001"

@@ -164,3 +164,7 @@ cython_debug/
 
 # Database
 data/*
+
+credentials.json
+service-account-key.json
+token.json
