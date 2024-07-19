@@ -13,6 +13,7 @@ if [ "$1" = "runserver" ]; then
 elif [ "$1" = "runserver-debug" ]; then
     echo "Starting django webserver with debug mode enabled"
     python -m pip install debugpy
+    python manage.py makemigrations 
     python manage.py migrate
     python -m debugpy --listen  5678 manage.py runserver 0.0.0.0:8000
 
