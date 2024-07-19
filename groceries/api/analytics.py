@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from ninja import ModelSchema, Router, Schema
 from django.db.models import Sum
 from requests import HTTPError
+from typing import List
 
 from groceries.models.article import Article
 from groceries.models.invoice_line import InvoiceLine
@@ -23,7 +24,7 @@ class InputInvoiceLineSchema(Schema):
 
 class InputInvoiceSchema(Schema):
     date: datetime.datetime
-    lines: list[InputInvoiceLineSchema]
+    lines: List[InputInvoiceLineSchema]
 
 
 @router.get("/group_by/", response=dict)
@@ -48,8 +49,7 @@ def get_grouped_groceries_by_field(
     }
     return total_cost_per_category
 
-
-@router.get("/price-ranking/", response=list[ArticleSchema])
+@router.get("/price-ranking/", response=List[ArticleSchema])
 def get_groceries_ranked_by_price(request, limit: int, date: str):
     """
     Returns the top [limit] most expensive items in a specific invoice.
@@ -64,12 +64,13 @@ def get_groceries_ranked_by_price(request, limit: int, date: str):
     return invoice_lines
 
 
-@router.post("/invoice/")
+@router.post("invoice/")
 def create_invoice(request, data: InputInvoiceSchema):
     """
     Create a new invoice.
     """
-    invoice_exists = InvoiceLine.objects.filter(date=data.date).exists()
+    invoice_exists = InvoiceLine.objects.filter(purchase_date=data.date).exists()
+ 
     if invoice_exists:
         return HTTPError(400, "Invoice already exists")
     try: 
@@ -78,6 +79,6 @@ def create_invoice(request, data: InputInvoiceSchema):
                 article_shop_id=line.shop_id, cost=line.cost, purchase_date=data.date
             )
     except Exception as e:
-        return HTTPError(500, str(e))
+        return HTTPError(500, {"message": str(e)})
 
     return HttpResponse(200, {"message": "Invoice created successfully!"})

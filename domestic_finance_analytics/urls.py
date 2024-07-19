@@ -20,5 +20,5 @@ from groceries.api.main import API_PATH as GROCERIES_API_PAH, groceries_api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(f"{GROCERIES_API_PAH}/", groceries_api.urls),
+    path(f"{GROCERIES_API_PAH}", groceries_api.urls),
 ]

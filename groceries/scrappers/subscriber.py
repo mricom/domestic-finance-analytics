@@ -1,7 +1,9 @@
 from concurrent.futures import TimeoutError
 from datetime import datetime
+import json
 from google.cloud import pubsub_v1
 import os.path
+import requests
 import tabula
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -17,6 +19,7 @@ creds = None
 # created automatically when the authorization flow completes for the first
 # time.]
 # 
+API_PATH = '/api/v1/groceries'
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 print("-"*50)
 print(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
@@ -54,11 +57,24 @@ def callback(message: pubsub_v1.subscriber.message.Message) -> None:
     print(f"Message data: {message.data.decode('utf-8')}")
     if retrieve_pdf_invoice():
         dfs = tabula.read_pdf(str(datetime.now().strftime('%Y-%m-%d')) + '_colryt_invoice.pdf', pages='all')
-        df = scan_prices(dfs)
+        df = scan_prices(dfs).rename(columns={'article': 'shop_id', 'total_spent': 'cost'})
         
         # TODO: call the endpoint with the data
+        json_data = {
+            "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "lines": df.to_dict(orient='records')
+        }
+        
+        json_str = json.dumps(json_data, indent=4)
+        print(json_str)
+        
+        # Send JSON to endpoint
+        endpoint_url = "http://dfa-django:8000" + API_PATH + "/analytics/invoice/"
+        response = requests.post(endpoint_url, json=json_data, verify=False)
+        print(f"Response from endpoint: {response.status_code} - {response.text}")
+
         print(df)
-        print(df.total_spent.sum())
+        #print(df.total_spent.sum())
     message.ack()
 
 streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
