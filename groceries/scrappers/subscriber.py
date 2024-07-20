@@ -57,9 +57,7 @@ def callback(message: pubsub_v1.subscriber.message.Message) -> None:
     print(f"Message data: {message.data.decode('utf-8')}")
     if retrieve_pdf_invoice():
         dfs = tabula.read_pdf(str(datetime.now().strftime('%Y-%m-%d')) + '_colryt_invoice.pdf', pages='all')
-        df = scan_prices(dfs).rename(columns={'article': 'shop_id', 'total_spent': 'cost'})
-        
-        # TODO: call the endpoint with the data
+        df = scan_prices(dfs).rename(columns={'article': 'shop_id', 'total_spent': 'cost'})        # TODO: call the endpoint with the data
         json_data = {
             "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             "lines": df.to_dict(orient='records')
