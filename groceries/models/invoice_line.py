@@ -2,6 +2,7 @@ from django.db import models
 
 from groceries.models.article import Article
 from groceries.models.shop import Shop
+from groceries.utils.errors.errors import NotFoundException
 
 class InvoiceLine(models.Model):
     # Purchased article
@@ -32,11 +33,11 @@ class InvoiceLine(models.Model):
     def create_invoice_line(cls, article_shop_id, cost, purchase_date, shop_id=None):
         shop = Shop.objects.first()
         if not shop:
-            raise ValueError("No shop found in the database.")
+            raise NotFoundException("No shop found in the database.")
         shop_id = shop.id
         article = Article.objects.filter(shop_id=article_shop_id).first()
         if not article:
-            raise ValueError("No article found in the database.")
+            raise NotFoundException("No article found in the database.")
         unit_price = article.unit_price
         quantity = int(cost / unit_price)
 

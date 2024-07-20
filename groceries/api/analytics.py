@@ -1,14 +1,15 @@
 import datetime
 import decimal
-from django.http import HttpResponse
+from django.http import JsonResponse
 from ninja import ModelSchema, Router, Schema
 from django.db.models import Sum
-from requests import HTTPError
 from typing import List
 
 from groceries.models.article import Article
 from groceries.models.invoice_line import InvoiceLine
 import logging as logger
+
+from groceries.utils.errors.errors import AlreadyExistsException, GenericException
 
 router = Router()
 
@@ -69,12 +70,13 @@ def get_groceries_ranked_by_price(request, limit: int, date: str):
 @router.post("invoice/")
 def create_invoice(request, data: InputInvoiceSchema):
     """
-    Create a new invoice.
+    Creates a new invoice.
+    Check that there are no products that were already invoiced on the same date.
     """
     invoice_exists = InvoiceLine.objects.filter(purchase_date=data.date).exists()
  
     if invoice_exists:
-        return HTTPError(400, "Invoice already exists")
+        raise AlreadyExistsException(message="Invoice already exists.")
     try: 
         for line in data.lines:
             InvoiceLine.create_invoice_line(
@@ -82,6 +84,5 @@ def create_invoice(request, data: InputInvoiceSchema):
             )
     except Exception as e:
         logger.error(str(e))
-        return HTTPError(500, {"message": str(e)})
-
-    return HttpResponse(200, {"message": "Invoice created successfully!"})
+        raise GenericException(message=str(e))
+    return JsonResponse(200, {"message": "Invoice created successfully!"})
