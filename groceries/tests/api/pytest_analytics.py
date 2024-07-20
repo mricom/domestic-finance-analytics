@@ -6,7 +6,11 @@ import pytest
 from groceries.models.article import Article
 from groceries.models.invoice_line import InvoiceLine
 from groceries.models.shop import Shop
-from groceries.api.analytics import get_groceries_ranked_by_price, get_grouped_groceries_by_field
+from groceries.api.analytics import (
+    create_invoice,
+    get_groceries_ranked_by_price,
+    get_grouped_groceries_by_field,
+)
 
 
 @pytest.mark.django_db
@@ -32,6 +36,7 @@ def create_articles():
             country_of_origin=f"Test {batch}",
         )
 
+
 @pytest.mark.django_db
 @pytest.fixture
 def create_invoice_lines():
@@ -50,9 +55,7 @@ def create_invoice_lines():
 @pytest.mark.usefixtures("create_shop", "create_articles", "create_invoice_lines")
 @pytest.mark.parametrize("field", ["category", "country_of_origin", "brand"])
 def test_can_get_grouped_groceries_by_field(rf, field):
-    costs = get_grouped_groceries_by_field(
-        rf, field=field, date="2021-01-01"
-    )
+    costs = get_grouped_groceries_by_field(rf, field=field, date="2021-01-01")
     print(costs)
     assert isinstance(costs, dict)
     assert costs["Test 1"] == 3
@@ -69,3 +72,24 @@ def test_can_get_groceries_ranked_by_price(rf):
     assert ranked_articles[0].unit_price == 7
     assert ranked_articles[1].unit_price == 6
     assert ranked_articles[2].unit_price == 5
+
+
+@pytest.mark.django_db
+@pytest.mark.usefixtures("create_shop", "create_articles")
+def test_can_create_invoice(rf):
+    articles = Article.objects.all()
+    data = {
+        "date": datetime.datetime.now(),
+        "lines": [
+            {"shop_id": article.shop_id, "cost": article.unit_price}
+            for article in articles
+        ],
+    }
+
+    shop = Shop.objects.get(id=1)
+    create_invoice(rf, data=data)
+
+    invoice_lines = InvoiceLine.objects.all()
+    
+    assert len(articles) == len(invoice_lines)
+    assert sum(invoice_lines.values_list("cost", flat=True)) == sum(articles.values_list("unit_price", flat=True))

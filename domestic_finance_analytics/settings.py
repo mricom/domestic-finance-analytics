@@ -75,16 +75,30 @@ WSGI_APPLICATION = "domestic_finance_analytics.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+DB_NAME = config("POSTGRES_DB")
+DB_USER = config("POSTGRES_USER")
+DB_PASSWORD = config("POSTGRES_PASSWORD")
+DB_HOST = config("POSTGRES_HOST")
+DB_PORT = config("POSTGRES_PORT")
+TEST_DB_NAME = config("TEST_DB_NAME")
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("POSTGRES_DB"),
-        "USER": config("POSTGRES_USER"),
-        "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": config("POSTGRES_HOST"),
-        "PORT": config("POSTGRES_PORT"),
-    }
+        "NAME": DB_NAME,
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
+        "HOST": DB_HOST,
+        "PORT": DB_PORT,
+    }, 
+    "test": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": TEST_DB_NAME,
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
+        "HOST": DB_HOST,
+        "PORT": DB_PORT,
+    }, 
 }
 
 

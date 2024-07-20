@@ -1,4 +1,5 @@
 import datetime
+import decimal
 from django.http import HttpResponse
 from ninja import ModelSchema, Router, Schema
 from django.db.models import Sum
@@ -7,6 +8,7 @@ from typing import List
 
 from groceries.models.article import Article
 from groceries.models.invoice_line import InvoiceLine
+import logging as logger
 
 router = Router()
 
@@ -19,7 +21,7 @@ class ArticleSchema(ModelSchema):
 
 class InputInvoiceLineSchema(Schema):
     shop_id: int
-    cost: float
+    cost: decimal.Decimal
 
 
 class InputInvoiceSchema(Schema):
@@ -79,6 +81,7 @@ def create_invoice(request, data: InputInvoiceSchema):
                 article_shop_id=line.shop_id, cost=line.cost, purchase_date=data.date
             )
     except Exception as e:
+        logger.error(str(e))
         return HTTPError(500, {"message": str(e)})
 
     return HttpResponse(200, {"message": "Invoice created successfully!"})

@@ -18,10 +18,10 @@ class InvoiceLine(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.PROTECT)
 
     def __str__(self):
-        return self.id
+        return self.article.name
 
     def __repr__(self):
-        return self.id
+        return self.article.name
 
     class Meta:
         ordering = ["id"]
@@ -35,6 +35,8 @@ class InvoiceLine(models.Model):
             raise ValueError("No shop found in the database.")
         shop_id = shop.id
         article = Article.objects.filter(shop_id=article_shop_id).first()
+        if not article:
+            raise ValueError("No article found in the database.")
         unit_price = article.unit_price
         quantity = int(cost / unit_price)
 
