@@ -24,9 +24,9 @@ def get_mock_last_data():
 
 def get_article_id(df_raw):
     try:
-        article_ids_descrp_col = df_raw['Unnamed: 0'].str.extract(r'(\d+|Réduction)').replace('0', np.nan).replace('Réduction', 999999999).dropna().rename(columns={0: 'article'}).astype(int)
+        article_ids_descrp_col = df_raw['Unnamed: 0'].str.extract(r'[A-Z]\s+(\d+)|(Réduction)').replace('0', np.nan).replace('Réduction', 999999999).dropna().rename(columns={0: 'article'}).astype(int)
         article_ids_descrp_col = article_ids_descrp_col.query("article >= @min_id_prod")
-        article_ids_validation_col = df_raw['T'].str.extract(r'(\d+|Réduction)').replace('0', np.nan).dropna().rename(columns={0: 'article'}).astype(int)
+        article_ids_validation_col = df_raw['T'].str.extract(r'[A-Z]\s+(\d+)|(Réduction)').replace('0', np.nan).rename(columns={0: 'article'}).dropna(subset=["article"]).dropna(axis=1, how='all').astype(int)
         article_ids_validation_col = article_ids_validation_col.query("article >= @min_id_prod")
         
         article_ids = article_ids_descrp_col if article_ids_descrp_col.shape[0] > article_ids_validation_col.shape[0] else article_ids_validation_col
