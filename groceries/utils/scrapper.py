@@ -20,8 +20,10 @@ def scrap_colruyt_data():
     while True:
         print(i)
         print(scrapped_df.shape)
+        # St-Katelijne-Waver: 639
+        # Mechelen: 683
         try:
-            api_url = f"https://apip.colruyt.be/gateway/emec.colruyt.protected.bffsvc/cg/fr/api/products?placeId=639&page={i}&size=250&isAvailable=true"
+            api_url = f"https://apip.colruyt.be/gateway/emec.colruyt.protected.bffsvc/cg/fr/api/products?placeId=683&page={i}&size=250&isAvailable=true"
             headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
             "X-CG-APIKey": "a8ylmv13-b285-4788-9e14-0f79b7ed2411",

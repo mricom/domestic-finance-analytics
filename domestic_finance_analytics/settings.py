@@ -146,4 +146,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TIME_ZONE = "Europe/Brussels"
 USE_I18N = True
-USE_TZ = True
+USE_TZ = False

@@ -16,4 +16,4 @@ RUN chmod a+x devops/services/scrapper/scrapper_entrypoint.sh
 ENV GOOGLE_APPLICATION_CREDENTIALS="/app/service-account-key.json"
 
 
-CMD ["/bin/bash", "devops/services/scrapper/scrapper_entrypoint.sh"]
+CMD ["/bin/bash", "devops/services/scrapper/scrapper_entrypoint.sh", "debug"]

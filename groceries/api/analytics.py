@@ -9,7 +9,7 @@ from groceries.models.article import Article
 from groceries.models.invoice_line import InvoiceLine
 import logging as logger
 
-from groceries.utils.errors.errors import AlreadyExistsException, GenericException
+from groceries.utils.errors.errors import AlreadyExistsException, GenericException, NotFoundException
 
 router = Router()
 
@@ -74,15 +74,26 @@ def create_invoice(request, data: InputInvoiceSchema):
     Check that there are no products that were already invoiced on the same date.
     """
     invoice_exists = InvoiceLine.objects.filter(purchase_date=data.date).exists()
- 
+    print(invoice_exists)
     if invoice_exists:
         raise AlreadyExistsException(message="Invoice already exists.")
+    errors: list[str] = []
     try: 
         for line in data.lines:
             InvoiceLine.create_invoice_line(
                 article_shop_id=line.shop_id, cost=line.cost, purchase_date=data.date
             )
+    except AlreadyExistsException as e:
+        logger.error(str(e))
+        errors.append(str(e))
+        # raise AlreadyExistsException(message=str(e))
+    except NotFoundException as e:
+        logger.error(str(e))
+        errors.append(str(e))
+        # raise NotFoundException(message=str(e))
     except Exception as e:
         logger.error(str(e))
-        raise GenericException(message=str(e))
-    return JsonResponse(200, {"message": "Invoice created successfully!"})
+        errors.append(str(e))
+        # raise GenericException(message=str(e))
+    raise GenericException(message=", ".join(errors))
+    # return JsonResponse(200, {"message": "Invoice created successfully!"})

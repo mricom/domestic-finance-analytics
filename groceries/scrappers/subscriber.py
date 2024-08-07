@@ -2,7 +2,8 @@ from concurrent.futures import TimeoutError
 from datetime import datetime
 import json
 from google.cloud import pubsub_v1
-import os.path
+import os
+from django.utils import timezone
 import requests
 import tabula
 from google.auth.transport.requests import Request
@@ -59,7 +60,8 @@ def callback(message: pubsub_v1.subscriber.message.Message) -> None:
         dfs = tabula.read_pdf(str(datetime.now().strftime('%Y-%m-%d')) + '_colryt_invoice.pdf', pages='all')
         df = scan_prices(dfs).rename(columns={'article': 'shop_id', 'total_spent': 'cost'})        # TODO: call the endpoint with the data
         json_data = {
-            "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+
+            "date": timezone.now(), #datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "+00:00",
             "lines": df.to_dict(orient='records')
         }
         

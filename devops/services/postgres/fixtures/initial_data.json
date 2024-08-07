@@ -1,0 +1,20 @@
+[
+	{
+		"model": "groceries.shop",
+		"pk": 1,
+		"fields": {
+			"name": "Colruyt St Katelijne Waver",
+			"location": "Putsesteenweg, 87, 2860 Sint-Katelijne-Waver",
+			"external_id": 639
+		}
+	},
+	{
+        "model": "groceries.shop",
+        "pk": 2,
+        "fields": {
+            "name": "Colruyt Mechelen",
+            "location": "Liersesteenweg, 396, 2800 Mechelen",
+            "external_id": 683
+        }
+    }
+]
